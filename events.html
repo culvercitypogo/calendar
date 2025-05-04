@@ -21,15 +21,13 @@
     .wrapper {
       width: 100%;
       height: 100%;
-      padding: clamp(0.5vh, 2vw, 1.5vh);
       display: flex;
       flex-direction: column;
-      gap: clamp(0.5vh, 1.5vw, 1vh);
       overflow: hidden;
     }
 
     h2 {
-     font-size: clamp(8vh, 6vw, 8vh); 
+     font-size: clamp(5vmax, 6vmax, 12vmax); 
      text-align: center;
       margin: 0;
     }
@@ -56,38 +54,68 @@
       background: #f8d26b;
       border-radius: 0.5vh;
       padding: clamp(0.5vh, 2vw, 1vh);
-      margin-bottom: clamp(0.5vh, 1.5vw, 1vh);
-      display: flex;
+      margin-bottom: clamp(1vh, 3vw, 2.5vh);
+      display: inline-flex;
       flex-direction: column;
-      justify-content: center;
       width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
-    .event-title {
-      font-size: clamp(0.8vmin, 1.8vw, 1.8vmax);
-      font-weight: bold;
-      margin-bottom: clamp(0.5vh, 1.5vw, 1vh);
-    }
+.event-title,
+.event-time {
+  width: 100%;
+  display: block;
+  font-size: clamp(0.9rem, 2.5vw, 1.4rem);
+  line-height: 1.2;
+  margin-bottom: 0.2em;
+}
 
     .event-time {
-      font-size: clamp(0.7vmin, 1.5vw, 1.5vmax);
       color: #3e3838;
-      margin-bottom: clamp(0.5vh, 1.5vw, 1vh);
+      Padding-top: 0.25em;
     }
 
     .event-location {
-      font-size: clamp(0.7vmin, 1.5vw, 1.5vmax);
       color: #446754;
+      text-overflow: ellipsis;
+      display: flex;
+      Align-items: center;
+      font-size: clamp(0.9rem, 2.5vw, 1.4rem);
+      line-height: 1.2;
+      Padding-top: 0.2em;
     }
 
     .event-location a {
       color: inherit;
+      white-space: nowrap;
       text-decoration: none;
+      display: inline-block;
+      max-width: 100%;
     }
 
     .event-location a:hover {
       text-decoration: underline;
     }
+
+.event-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+  margin-bottom: 0.4em;
+}
+
+.event-icon {
+  width: 1.5em;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.event-text {
+  flex: 1;
+  word-break: break-word;
+}
+
   </style>
 </head>
 <body>
@@ -121,18 +149,27 @@
           const timeDisplay = `${startDate}, ${startTime} – ${endTime}`;
 
           let locationHTML = '';
-          if (event.location) {
-            const mapsLink = `https://www.google.com/maps/search/?q=${encodeURIComponent(event.location)}`;
-            locationHTML = `<div class="event-location">📍 <a href="${mapsLink}" target="_blank" rel="noopener noreferrer">${event.location}</a></div>`;
-          }
+if (event.location) {
+  const mapsLink = `https://www.google.com/maps/search/?q=${encodeURIComponent(event.location)}`;
+  locationHTML = `
+    <div class="event-line">
+      <div class="event-icon">📍</div>
+      <div class="event-location">
+        <a href="${mapsLink}" target="_blank" rel="noopener noreferrer">${event.location}</a>
+      </div>
+    </div>`;
+}
 
-          return `
-            <div class="event">
-              <div class="event-title">${event.summary || '(No title)'}</div>
-              <div class="event-time">🕒 ${timeDisplay}</div>
-              ${locationHTML}
-            </div>
-          `;
+return `
+  <div class="event">
+    <div class="event-title">${event.summary || '(No title)'}</div>
+    <div class="event-line">
+      <div class="event-icon">🕒</div>
+      <div class="event-time">${timeDisplay}</div>
+    </div>
+    ${locationHTML}
+  </div>
+`;
         };
 
         const html = data.items.map(renderEvent).join('');

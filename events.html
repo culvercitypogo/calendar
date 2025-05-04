@@ -129,7 +129,7 @@
     const apiKey = 'AIzaSyDLBZE6aBneP_3qI_1OnRJlRVRODmexHyk'; // Your API key
     const now = new Date().toISOString();
 
-    fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}&timeMin=${now}&maxResults=3&singleEvents=true&orderBy=startTime`)
+    fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}&timeMin=${now}&maxResults=2500&singleEvents=true&orderBy=startTime`)
       .then(response => response.json())
       .then(data => {
         const eventsEl = document.getElementById('events');

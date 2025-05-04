@@ -10,18 +10,24 @@
     }
 
     html, body {
-      margin: 0;
-      padding: 0;
-      background: #3e3838;
-      color: white;
-      font-family: system-ui, sans-serif;
-      width: 100%;
-    }
+  margin: 0;
+  padding: 0;
+  background: #3e3838;
+  color: white;
+  font-family: system-ui, sans-serif;
+  width: 100%;
+}
 
-    .wrapper {
-      width: 100%;
-      padding: 1rem;
-    }
+
+  .wrapper {
+  width: 100%;
+  max-width: none;
+  padding: clamp(0.5rem, 2vw, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 2vw, 1rem);
+}
+
 
     h2 {
       font-size: clamp(1rem, 2.5vw, 1.8rem);
@@ -30,15 +36,16 @@
     }
 
     #events {
-      display: grid;
-      grid-template-rows: repeat(3, auto);
-      gap: 1rem;
-    }
+  display: grid;
+  grid-template-rows: repeat(3, auto);
+  gap: clamp(0.5rem, 2vw, 1rem);
+}
+
 
     .event {
       background: #1e1e1e;
       border-radius: 5px;
-      padding: 1rem;
+      padding: clamp(0.5rem, 2vw, 1rem);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -48,13 +55,13 @@
     .event-title {
       font-size: clamp(1rem, 2.5vw, 1.2rem);
       font-weight: bold;
-      margin-bottom: 0.5rem;
+      margin-bottom: clamp(0.5rem, 2vw, 1rem);
     }
 
     .event-time {
       font-size: clamp(0.9rem, 2vw, 1rem);
       color: #bbb;
-      margin-bottom: 0.5rem;
+      margin-bottom: clamp(0.5rem, 2vw, 1rem);
     }
 
     .event-location {

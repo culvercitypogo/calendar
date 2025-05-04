@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=0.75" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upcoming Events</title>
   <style>
     * {
@@ -10,62 +10,66 @@
     }
 
     html, body {
-  margin: 0;
-  padding: 0;
-  background: #3e3838;
-  color: #3e3838;
-  font-family: system-ui, sans-serif;
-  width: 100%;
-}
-
-
-  .wrapper {
-  width: 100%;
-  max-width: none;
-  padding: clamp(0.5rem, 2vw, 1rem);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.5rem, 2vw, 1rem);
-}
-
-
-    h2 {
-      font-size: clamp(1rem, 2.5vw, 1.8rem);
-      margin: 1rem;
-      text-align: center;
-    }
-
-    #events {
-  display: grid;
-  grid-template-rows: repeat(3, auto);
-  gap: clamp(0.5rem, 2vw, 1rem);
-}
-
-
-    .event {
-      background: #f8d26b;
-      border-radius: 5px;
-      padding: clamp(0.5rem, 2vw, 1rem);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      margin: 0;
+      padding: 0;
+      background: #3e3838;
+      color: white;
+      font-family: system-ui, sans-serif;
       width: 100%;
     }
 
+    .wrapper {
+      width: 100%;
+      padding: clamp(0.5rem, 2vw, 1rem);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.5rem, 2vw, 1rem);
+    }
+
+    h2 {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      margin: 0;
+      text-align: center;
+    }
+
+    .scroll-wrapper {
+      max-height: 30vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .scroll-content {
+      display: flex;
+      flex-direction: column;
+      animation: scroll-vert 20s linear infinite;
+    }
+
+    @keyframes scroll-vert {
+      0%   { transform: translateY(0%); }
+      100% { transform: translateY(-50%); }
+    }
+
+    .event {
+      background: #1e1e1e;
+      border-radius: 8px;
+      padding: clamp(0.5rem, 2vw, 1rem);
+      margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+    }
+
     .event-title {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
       font-weight: bold;
-      margin-bottom: clamp(0.5rem, 2vw, 1rem);
+      margin-bottom: 0.3em;
     }
 
     .event-time {
-      font-size: clamp(0.9rem, 2vw, 1rem);
+      font-size: clamp(0.8rem, 2vw, 1rem);
       color: #bbb;
-      margin-bottom: clamp(0.5rem, 2vw, 1rem);
+      margin-bottom: 0.3em;
     }
 
     .event-location {
-      font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+      font-size: clamp(0.7rem, 1.8vw, 0.95rem);
       color: #4FC3F7;
     }
 
@@ -82,14 +86,16 @@
 <body>
   <div class="wrapper">
     <h2>Upcoming Events</h2>
-    <div id="events">
-      <!-- Events will load here -->
+    <div class="scroll-wrapper">
+      <div class="scroll-content" id="events">
+        <!-- Event content will go here -->
+      </div>
     </div>
   </div>
 
   <script>
     const calendarId = 'culvercitypokemongo@gmail.com';
-    const apiKey = 'AIzaSyDLBZE6aBneP_3qI_1OnRJlRVRODmexHyk';
+    const apiKey = 'AIzaSyDLBZE6aBneP_3qI_1OnRJlRVRODmexHyk'; // Your API key
     const now = new Date().toISOString();
 
     fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}&timeMin=${now}&maxResults=3&singleEvents=true&orderBy=startTime`)
@@ -103,10 +109,9 @@
           return;
         }
 
-        data.items.forEach(event => {
+        const renderEvent = (event) => {
           const start = new Date(event.start.dateTime || event.start.date);
           const end = new Date(event.end.dateTime || event.end.date);
-
           const startDate = start.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
           const startTime = start.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
           const endTime = end.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
@@ -118,15 +123,18 @@
             locationHTML = `<div class="event-location">📍 <a href="${mapsLink}" target="_blank" rel="noopener noreferrer">${event.location}</a></div>`;
           }
 
-          const html = `
+          return `
             <div class="event">
               <div class="event-title">${event.summary || '(No title)'}</div>
               <div class="event-time">🕒 ${timeDisplay}</div>
               ${locationHTML}
             </div>
           `;
-          eventsEl.innerHTML += html;
-        });
+        };
+
+        // Duplicate events for smooth scrolling
+        const html = data.items.map(renderEvent).join('');
+        eventsEl.innerHTML = html + html; // duplicated for seamless scroll loop
       })
       .catch(error => {
         document.getElementById('events').innerHTML = '<p>Error loading events.</p>';

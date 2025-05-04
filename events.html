@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upcoming Events</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #3e3838;
+      color: white;
+      font-family: system-ui, sans-serif;
+      width: 100%;
+    }
+
+    .wrapper {
+      width: 100%;
+      padding: 1rem;
+    }
+
+    h2 {
+      font-size: clamp(1rem, 2.5vw, 1.8rem);
+      margin: 0 0 1rem 0;
+      text-align: center;
+    }
+
+    #events {
+      display: grid;
+      grid-template-rows: repeat(3, auto);
+      gap: 1rem;
+    }
+
+    .event {
+      background: #1e1e1e;
+      border-radius: 5px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .event-title {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-time {
+      font-size: clamp(0.9rem, 2vw, 1rem);
+      color: #bbb;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-location {
+      font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+      color: #4FC3F7;
+    }
+
+    .event-location a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .event-location a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h2>Upcoming Events</h2>
+    <div id="events">
+      <!-- Events will load here -->
+    </div>
+  </div>
+
+  <script>
+    const calendarId = 'culvercitypokemongo@gmail.com';
+    const apiKey = 'AIzaSyDLBZE6aBneP_3qI_1OnRJlRVRODmexHyk';
+    const now = new Date().toISOString();
+
+    fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}&timeMin=${now}&maxResults=3&singleEvents=true&orderBy=startTime`)
+      .then(response => response.json())
+      .then(data => {
+        const eventsEl = document.getElementById('events');
+        eventsEl.innerHTML = '';
+
+        if (!data.items || data.items.length === 0) {
+          eventsEl.innerHTML = '<p>No upcoming events.</p>';
+          return;
+        }
+
+        data.items.forEach(event => {
+          const start = new Date(event.start.dateTime || event.start.date);
+          const end = new Date(event.end.dateTime || event.end.date);
+
+          const startDate = start.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+          const startTime = start.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+          const endTime = end.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+          const timeDisplay = `${startDate}, ${startTime} – ${endTime}`;
+
+          let locationHTML = '';
+          if (event.location) {
+            const mapsLink = `https://www.google.com/maps/search/?q=${encodeURIComponent(event.location)}`;
+            locationHTML = `<div class="event-location">📍 <a href="${mapsLink}" target="_blank" rel="noopener noreferrer">${event.location}</a></div>`;
+          }
+
+          const html = `
+            <div class="event">
+              <div class="event-title">${event.summary || '(No title)'}</div>
+              <div class="event-time">🕒 ${timeDisplay}</div>
+              ${locationHTML}
+            </div>
+          `;
+          eventsEl.innerHTML += html;
+        });
+      })
+      .catch(error => {
+        document.getElementById('events').innerHTML = '<p>Error loading events.</p>';
+        console.error('API error:', error);
+      });
+  </script>
+</body>
+</html>

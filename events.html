@@ -166,9 +166,22 @@ if (event.location) {
     </div>`;
 }
 
+ // Extract link from the description (first valid http(s) link)
+let eventLink = null;
+if (event.description) {
+  const urlMatch = event.description.match(/https?:\/\/[^\s]+/);
+  if (urlMatch) {
+    eventLink = urlMatch[0];
+  }
+}
+
+const titleHTML = eventLink
+  ? `<a href="${eventLink}" target="_blank" rel="noopener noreferrer" class="event-title">${event.summary || '(No title)'}</a>`
+  : `<div class="event-title">${event.summary || '(No title)'}</div>`;
+          
 return `
   <div class="event">
-    <div class="event-title">${event.summary || '(No title)'}</div>
+    ${titleHTML}
     <div class="event-line">
       <div class="event-icon">🕒</div>
       <div class="event-time">${timeDisplay}</div>
